@@ -1,0 +1,149 @@
+openapi: 3.0.3
+info:
+  title: STD24141
+  version: "1.0.0"
+  description: "This is a specification of STD24141"
+servers:
+  - url: http://localhost:8000
+
+paths:
+  /ping:
+    get:
+      summary: Health check
+      description: Returns "pong"
+      responses:
+        "200":
+          description: Pong response
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: pong
+
+  /cars:
+    post:
+      summary: Create a new car
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Car"
+      responses:
+        "201":
+          description: Car created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Car"
+    get:
+      summary: Retrieve all cars
+      responses:
+        "200":
+          description: List of cars
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Car"
+
+  /cars/{id}:
+    get:
+      summary: Retrieve a car by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Car found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Car"
+        "404":
+          description: Car not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /cars/{id}/characteristics:
+    put:
+      summary: Update car characteristics
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Characteristics"
+      responses:
+        "200":
+          description: Car with updated characteristics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CarWithUpdatedCharacteristics"
+        "404":
+          description: Car not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Characteristics:
+      type: object
+      properties:
+        max_speed:
+          type: number
+          example: 220
+        max_fuel_capacity:
+          type: number
+          example: 50
+      required:
+        - max_speed
+        - max_fuel_capacity
+
+    Car:
+      type: object
+      properties:
+        identifier:
+          type: string
+          example: "car001"
+        brand:
+          type: string
+          example: "Toyota"
+        model:
+          type: string
+          example: "Corolla"
+        characteristics:
+          $ref: "#/components/schemas/Characteristics"
+      required:
+        - identifier
+        - brand
+        - model
+        - characteristics
+
+    CarWithUpdatedCharacteristics:
+      allOf:
+        - $ref: "#/components/schemas/Car"
+        - type: object
+          description: Car with updated characteristics
+
+    Error:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: "Car with id 'xxx' not found"

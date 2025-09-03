@@ -46,7 +46,7 @@ def get_car(id: str):
         detail=f"Car with id '{id}' not found"
     )
 
-# e.
+# e.Bonus :
 @app.put("/cars/{id}/characteristics", response_model=Car)
 def update_characteristics(id: str, new_characteristics: Characteristics):
     for car in cars_db:
